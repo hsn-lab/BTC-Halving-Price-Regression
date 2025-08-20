@@ -39,3 +39,7 @@
 • **Growth Analysis**: Provides percentage growth calculations between halving periods and compares actual versus predicted prices with error percentages for model validation
 
 <img width="1440" height="816" alt="ExtendedBTCHalvingPriceRegression" src="https://github.com/user-attachments/assets/2390e71b-4195-4cde-8503-b4424208af4b" />
+
+Inspired by: https://charts.bitbo.io/rainbow/
+Made by: me, ChatGPT, Claude
+Data: https://www.investing.com/crypto/bitcoin/historical-data | https://charts.bitbo.io/rainbow/
