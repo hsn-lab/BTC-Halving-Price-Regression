@@ -1,4 +1,4 @@
-# BTC-Halving-Price-Regression
+# Bitcoin Halving Price Regression
 
 • **Core Functionality**: Bitcoin Halving Price Regression (HPR) analysis fitting logarithmic models to halving prices (2012-2024) and projecting future halvings through 2036
 
