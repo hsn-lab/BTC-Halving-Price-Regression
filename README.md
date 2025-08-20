@@ -37,3 +37,5 @@
 • **Technical Features**: Logarithmic scale visualisation effectively displays exponential growth across multiple orders of magnitude with vertical markers for halving years
 
 • **Growth Analysis**: Provides percentage growth calculations between halving periods and compares actual versus predicted prices with error percentages for model validation
+
+<img width="1440" height="816" alt="ExtendedBTCHalvingPriceRegression" src="https://github.com/user-attachments/assets/2390e71b-4195-4cde-8503-b4424208af4b" />
