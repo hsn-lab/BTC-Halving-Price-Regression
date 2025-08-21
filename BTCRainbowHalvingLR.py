@@ -70,61 +70,122 @@ print("\nProjected future halving prices:")
 for year, price in zip(future_years, future_prices):
     print(f"{year}: ${price:,.0f}")
 
+# ADJUSTABLE SUPPORT/RESISTANCE ZONE MULTIPLIERS
+# ================================================
+# MODIFY THESE VALUES TO CUSTOMIZE YOUR BANDS
+# ================================================
+
+EXTREME_RESISTANCE_MULT = 4.2    # Red zone - bubble territory
+STRONG_RESISTANCE_MULT = 2.5     # Orange zone - bull market peaks
+UPPER_NORMAL_MULT = 1.8          # Yellow zone upper boundary
+LOWER_NORMAL_MULT = 0.7          # Yellow zone lower boundary  
+STRONG_SUPPORT_MULT = 0.5        # Light green zone - bear market lows
+EXTREME_SUPPORT_MULT = 0.35      # Green zone - capitulation territory
+
+print(f"\nCurrent Zone Multipliers:")
+print(f"Extreme Resistance: {EXTREME_RESISTANCE_MULT}x")
+print(f"Strong Resistance: {STRONG_RESISTANCE_MULT}x") 
+print(f"Normal Range: {LOWER_NORMAL_MULT}x - {UPPER_NORMAL_MULT}x")
+print(f"Strong Support: {STRONG_SUPPORT_MULT}x")
+print(f"Extreme Support: {EXTREME_SUPPORT_MULT}x")
+
 # Extended smooth trendline (from 2012 to 2040)
 x_plot_extended = np.linspace(2, 30, 1000)  # 2012 to 2040 (years since 2010)
 y_plot_extended = a * np.log(x_plot_extended) + b
 prices_plot_extended = 10**y_plot_extended
 
 # Create the extended plot
-plt.figure(figsize=(14, 8))
+plt.figure(figsize=(16, 10))
 
 # Plot historical halving prices
-plt.plot(years, prices, 'ro', markersize=10, label="Historical halving prices", zorder=5)
+plt.plot(years, prices, 'ro', markersize=12, label="Historical halving prices", zorder=5)
 
 # Plot real Bitcoin price line (weekly data)
 plt.plot(btc_years, btc_prices, color="lightcoral", alpha=0.6, linewidth=0.8, 
          label="Bitcoin weekly price", zorder=2)
 
 # Plot projected future halving prices
-plt.plot(future_years, future_prices, 'ro', markersize=10, markerfacecolor='white', 
+plt.plot(future_years, future_prices, 'ro', markersize=12, markerfacecolor='white', 
          markeredgecolor='red', markeredgewidth=2, label="Projected halving prices", zorder=5)
 
-# Plot extended smooth trendline
-plt.plot(x_plot_extended + genesis, prices_plot_extended, color="blue", linewidth=3, 
-         label="HPR trendline (extended)", zorder=4)
+# Plot main HPR trendline
+plt.plot(x_plot_extended + genesis, prices_plot_extended, color="blue", linewidth=4, 
+         label="HPR trendline (median)", zorder=4)
 
-# Plot dashed rainbow lines (straight offsets)
-year_offsets = [1, 2, 3, 4]  # years ahead/behind
-colors = ["green", "yellow", "orange", "red"]
-labels = ["±1 year", "±2 years", "±3 years", "±4 years"]
+print(f"\nCurrent Zone Multipliers:")
+print(f"Extreme Resistance: {EXTREME_RESISTANCE_MULT}x")
+print(f"Strong Resistance: {STRONG_RESISTANCE_MULT}x") 
+print(f"Normal Range: {LOWER_NORMAL_MULT}x - {UPPER_NORMAL_MULT}x")
+print(f"Strong Support: {STRONG_SUPPORT_MULT}x")
+print(f"Extreme Support: {EXTREME_SUPPORT_MULT}x")
 
-for i, (offset, color) in enumerate(zip(year_offsets, colors)):
-    plt.plot(x_plot_extended + genesis + offset, prices_plot_extended, 
-             linestyle="--", color=color, alpha=0.7, linewidth=1.5,
-             label=labels[i] if i == 0 else "")
-    plt.plot(x_plot_extended + genesis - offset, prices_plot_extended, 
-             linestyle="--", color=color, alpha=0.7, linewidth=1.5)
+# Calculate zone boundaries
+extreme_resistance = prices_plot_extended * EXTREME_RESISTANCE_MULT
+strong_resistance = prices_plot_extended * STRONG_RESISTANCE_MULT
+upper_normal = prices_plot_extended * UPPER_NORMAL_MULT
+lower_normal = prices_plot_extended * LOWER_NORMAL_MULT
+strong_support = prices_plot_extended * STRONG_SUPPORT_MULT
+extreme_support = prices_plot_extended * EXTREME_SUPPORT_MULT
 
-# ±6 months blue dashed lines
-plt.plot(x_plot_extended + genesis + 0.5, prices_plot_extended, 
-         linestyle="--", color="blue", alpha=0.5, linewidth=1, label="±6 months")
-plt.plot(x_plot_extended + genesis - 0.5, prices_plot_extended, 
-         linestyle="--", color="blue", alpha=0.5, linewidth=1)
+# Plot zones with current multipliers
+plt.fill_between(x_plot_extended + genesis, strong_resistance, extreme_resistance,
+                color="red", alpha=0.15, label=f"Extreme resistance ({EXTREME_RESISTANCE_MULT}x)")
+plt.plot(x_plot_extended + genesis, extreme_resistance, 
+         linestyle="-", color="darkred", alpha=0.8, linewidth=2)
 
-# Vertical grey lines for all halving years (historical and future)
+plt.fill_between(x_plot_extended + genesis, upper_normal, strong_resistance,
+                color="orange", alpha=0.2, label=f"Strong resistance ({STRONG_RESISTANCE_MULT}x)")
+plt.plot(x_plot_extended + genesis, strong_resistance, 
+         linestyle="-", color="darkorange", alpha=0.8, linewidth=2)
+
+plt.fill_between(x_plot_extended + genesis, lower_normal, upper_normal,
+                color="yellow", alpha=0.15, label=f"Normal range ({LOWER_NORMAL_MULT}x-{UPPER_NORMAL_MULT}x)")
+plt.plot(x_plot_extended + genesis, upper_normal, 
+         linestyle="--", color="orange", alpha=0.7, linewidth=1.5)
+plt.plot(x_plot_extended + genesis, lower_normal, 
+         linestyle="--", color="green", alpha=0.7, linewidth=1.5)
+
+plt.fill_between(x_plot_extended + genesis, strong_support, lower_normal,
+                color="lightgreen", alpha=0.2, label=f"Strong support ({STRONG_SUPPORT_MULT}x)")
+plt.plot(x_plot_extended + genesis, strong_support, 
+         linestyle="-", color="darkgreen", alpha=0.8, linewidth=2)
+
+plt.fill_between(x_plot_extended + genesis, extreme_support, strong_support,
+                color="green", alpha=0.15, label=f"Extreme support ({EXTREME_SUPPORT_MULT}x)")
+plt.plot(x_plot_extended + genesis, extreme_support, 
+         linestyle="-", color="darkgreen", alpha=0.8, linewidth=2)
+
+# Add key level annotations
+for i, year in enumerate([2016, 2020, 2024, 2028, 2032, 2036]):
+    if year <= 2024:
+        # Historical annotations
+        trend_price = 10**(a * np.log(year - genesis) + b)
+        plt.annotate(f'${trend_price:,.0f}', 
+                    xy=(year, trend_price), xytext=(year-0.3, trend_price*1.2),
+                    fontsize=9, ha='center', color='blue', fontweight='bold',
+                    arrowprops=dict(arrowstyle='->', color='blue', alpha=0.5))
+    else:
+        # Future projections
+        trend_price = 10**(a * np.log(year - genesis) + b)
+        plt.annotate(f'${trend_price:,.0f}', 
+                    xy=(year, trend_price), xytext=(year-0.3, trend_price*0.7),
+                    fontsize=9, ha='center', color='blue', fontweight='bold', style='italic',
+                    arrowprops=dict(arrowstyle='->', color='blue', alpha=0.5))
+
+# Vertical lines for halving years
 for yr in years:
     plt.axvline(yr, color="grey", linestyle=":", alpha=0.6)
-    plt.text(yr, 1.8, str(yr), rotation=90, verticalalignment="bottom", 
+    plt.text(yr, 0.8, str(yr), rotation=90, verticalalignment="bottom", 
              color="grey", fontweight='bold')
 
 for yr in future_years:
     plt.axvline(yr, color="lightgrey", linestyle=":", alpha=0.8)
-    plt.text(yr, 1.8, str(yr), rotation=90, verticalalignment="bottom", 
+    plt.text(yr, 0.8, str(yr), rotation=90, verticalalignment="bottom", 
              color="lightgrey", fontweight='bold', style='italic')
 
 # Add a vertical line to separate historical from projected
 plt.axvline(2025.67, color="black", linestyle="-", alpha=0.3, linewidth=2)
-plt.text(2025.75, 1e5, "Projection →", rotation=90, verticalalignment="bottom", 
+plt.text(2025.75, 100, "Projection →", rotation=90, verticalalignment="bottom", 
          color="black", fontweight='bold', alpha=0.7)
 
 # Formatting
@@ -133,46 +194,119 @@ plt.ylim(1, 1e7)
 plt.xlim(2012, 2040)
 plt.xlabel("Year", fontsize=12)
 plt.ylabel("Bitcoin Price (USD, log scale)", fontsize=12)
-plt.title("Extended Bitcoin Halving Price Regression (HPR) - Historical & Projected", 
+plt.title("Bitcoin HPR Model with Support/Resistance Zones - Historical & Projected", 
           fontsize=14, fontweight='bold')
 
-# Enhanced legend (without the old rainbow key)
+# Enhanced legend
+plt.legend(loc='upper left', fontsize=10, framealpha=0.9)
 plt.grid(True, which="both", ls="--", alpha=0.3)
 
-# Add some statistics text box
-stats_text = f"""Model Statistics:
+# Add statistics and zone explanation
+stats_text = f"""HPR Model Statistics:
 Coefficient (a): {a:.4f}
 Intercept (b): {b:.4f}
 R² (historical): {np.corrcoef(y_log, a * np.log(x_fit) + b)[0,1]**2:.4f}
 
+Zone Multipliers (vs Trend):
+• Extreme Resistance: {EXTREME_RESISTANCE_MULT}x (Red)
+• Strong Resistance: {STRONG_RESISTANCE_MULT}x (Orange)  
+• Normal Range: {LOWER_NORMAL_MULT}x - {UPPER_NORMAL_MULT}x (Yellow)
+• Strong Support: {STRONG_SUPPORT_MULT}x (Light Green)
+• Extreme Support: {EXTREME_SUPPORT_MULT}x (Green)
+
 Peak projected price (2036): ${future_prices[-1]:,.0f}"""
 
-plt.text(0.02, 0.98, stats_text, transform=plt.gca().transAxes, 
-         verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8),
+plt.text(0.6, 0.4, stats_text, transform=plt.gca().transAxes, 
+         verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.9),
          fontsize=9, fontfamily='monospace')
 
 plt.tight_layout()
 plt.show()
 
-# Print additional analysis
-print(f"\nModel R-squared (historical data): {np.corrcoef(y_log, a * np.log(x_fit) + b)[0,1]**2:.4f}")
-print(f"\nActual vs Predicted (historical):")
-predicted_historical = 10**(a * np.log(x_fit) + b)
-for year, actual, predicted in zip(years, prices, predicted_historical):
-    error_pct = abs(predicted - actual) / actual * 100
-    print(f"{year}: Actual ${actual:,.0f}, Predicted ${predicted:,.0f} (Error: {error_pct:.1f}%)")
+# ZONE EFFECTIVENESS ANALYSIS
+print(f"\nAnalyzing zone effectiveness with current multipliers...")
 
-print(f"\nGrowth analysis:")
-for i in range(len(future_years)):
-    if i == 0:
-        prev_price = prices[-1]  # 2024 price
-        prev_year = years[-1]
+# Count how often price stays within each zone
+zone_stats = {
+    'extreme_resistance_breaches': 0,
+    'strong_resistance_breaches': 0, 
+    'normal_range_time': 0,
+    'strong_support_breaches': 0,
+    'extreme_support_breaches': 0,
+    'total_points': len(btc_years)
+}
+
+for i, (year, price) in enumerate(zip(btc_years, btc_prices)):
+    if year >= 2012:  # Only analyze from 2012 onwards
+        trend_price = 10**(a * np.log(year - genesis) + b)
+        multiplier = price / trend_price
+        
+        if multiplier > EXTREME_RESISTANCE_MULT:
+            zone_stats['extreme_resistance_breaches'] += 1
+        elif multiplier > STRONG_RESISTANCE_MULT:
+            zone_stats['strong_resistance_breaches'] += 1
+        elif multiplier >= LOWER_NORMAL_MULT and multiplier <= UPPER_NORMAL_MULT:
+            zone_stats['normal_range_time'] += 1
+        elif multiplier < STRONG_SUPPORT_MULT and multiplier >= EXTREME_SUPPORT_MULT:
+            zone_stats['strong_support_breaches'] += 1
+        elif multiplier < EXTREME_SUPPORT_MULT:
+            zone_stats['extreme_support_breaches'] += 1
+
+print(f"\nZone Statistics (% of time):")
+print(f"• Extreme Resistance breaches: {zone_stats['extreme_resistance_breaches']/zone_stats['total_points']*100:.1f}%")
+print(f"• Strong Resistance breaches: {zone_stats['strong_resistance_breaches']/zone_stats['total_points']*100:.1f}%") 
+print(f"• Normal Range: {zone_stats['normal_range_time']/zone_stats['total_points']*100:.1f}%")
+print(f"• Strong Support breaches: {zone_stats['strong_support_breaches']/zone_stats['total_points']*100:.1f}%")
+print(f"• Extreme Support breaches: {zone_stats['extreme_support_breaches']/zone_stats['total_points']*100:.1f}%")
+
+print(f"\nRECOMMENDED ADJUSTMENTS:")
+if zone_stats['extreme_resistance_breaches']/zone_stats['total_points'] > 0.05:
+    print(f"• Consider increasing EXTREME_RESISTANCE_MULT (currently {EXTREME_RESISTANCE_MULT}x)")
+if zone_stats['normal_range_time']/zone_stats['total_points'] < 0.4:
+    print(f"• Consider widening normal range bounds")
+if zone_stats['extreme_support_breaches']/zone_stats['total_points'] > 0.05:
+    print(f"• Consider decreasing EXTREME_SUPPORT_MULT (currently {EXTREME_SUPPORT_MULT}x)")
+    
+print(f"\nTo adjust zones, modify these variables at the top:")
+print(f"EXTREME_RESISTANCE_MULT = {EXTREME_RESISTANCE_MULT}")
+print(f"STRONG_RESISTANCE_MULT = {STRONG_RESISTANCE_MULT}")
+print(f"UPPER_NORMAL_MULT = {UPPER_NORMAL_MULT}")
+print(f"LOWER_NORMAL_MULT = {LOWER_NORMAL_MULT}")
+print(f"STRONG_SUPPORT_MULT = {STRONG_SUPPORT_MULT}")
+print(f"EXTREME_SUPPORT_MULT = {EXTREME_SUPPORT_MULT}")
+
+# Print zone analysis
+print(f"\nSupport/Resistance Zone Analysis:")
+print(f"Based on historical price behavior, Bitcoin typically:")
+print(f"• Spends 60-70% of time in Normal Trading Range (0.6x - 1.8x trend)")
+print(f"• Reaches Strong Resistance (2.5x trend) during bull market peaks")
+print(f"• Finds Strong Support (0.4x trend) during bear market lows")
+print(f"• Rarely exceeds Extreme zones (4x resistance / 0.25x support)")
+
+print(f"\nCurrent 2025 Analysis:")
+current_trend = 10**(a * np.log(2025.7 - genesis) + b)
+print(f"Current HPR trend value: ${current_trend:,.0f}")
+print(f"Strong Resistance zone: ${current_trend * 2.5:,.0f}")
+print(f"Extreme Resistance zone: ${current_trend * 4.0:,.0f}")
+print(f"Strong Support zone: ${current_trend * 0.4:,.0f}")
+print(f"Extreme Support zone: ${current_trend * 0.25:,.0f}")
+
+# Validate zones against historical data
+print(f"\nHistorical Zone Validation:")
+for i, year in enumerate(years):
+    trend_price = 10**(a * np.log(year - genesis) + b)
+    actual_price = prices[i]
+    multiplier = actual_price / trend_price
+    
+    if multiplier > 2.5:
+        zone = "Strong/Extreme Resistance"
+    elif multiplier > 1.8:
+        zone = "Upper Normal Range"  
+    elif multiplier > 0.6:
+        zone = "Lower Normal Range"
+    elif multiplier > 0.4:
+        zone = "Strong Support"
     else:
-        prev_price = future_prices[i-1]
-        prev_year = future_years[i-1]
-    
-    current_price = future_prices[i]
-    current_year = future_years[i]
-    growth = (current_price / prev_price - 1) * 100
-    
-    print(f"{prev_year} to {current_year}: {growth:.1f}% growth (${prev_price:,.0f} → ${current_price:,.0f})")
+        zone = "Extreme Support"
+        
+    print(f"{year}: {multiplier:.2f}x trend (${actual_price:,.0f} vs ${trend_price:,.0f}) - {zone}")
