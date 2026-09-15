@@ -94,11 +94,5 @@ Expected halving prices based on current model (subject to market volatility):
 - **Inspiration**: [BitBo Rainbow Chart](https://charts.bitbo.io/rainbow/)
 - **Development**: Created with assistance from ChatGPT and Claude
 
-## License
-
-[Add license information if applicable]
-
----
-
 **Current Version**: V0.2  
 **Last Updated**: 2025
