@@ -1,50 +1,104 @@
 # Bitcoin Halving Price Regression
 
-• **Core Functionality**: Bitcoin Halving Price Regression (HPR) analysis fitting logarithmic models to halving prices (2012-2024) and projecting future halvings through 2036
+Analyzing Bitcoin's price patterns around halving events using logarithmic regression to project future price movements through 2036.
 
-• **Logarithmic Regression Model**: Employs log10(price) = a*ln(years-2008) + b where 'a' represents the exponential growth coefficient and 'b' the y-intercept constant, transforming exponential price growth into linear relationship
+## Overview
 
-• **Time Transformation**: Subtracts 2008 from halving years to create x_fit = [4, 8, 12, 16] corresponding to years since Bitcoin's conceptual origin, avoiding ln(0) mathematical errors
+This project fits logarithmic regression models to historical Bitcoin halving prices (2012-2024) and generates predictions for future halving cycles. The analysis reveals correlations between Bitcoin's programmed scarcity events and major price movements, providing data-driven insights into supply reduction impacts.
 
-• **Price Logarithmic Conversion**: Transforms halving prices [12.33, 651.94, 8591.65, 63807] into log10 values [1.091, 2.814, 3.934, 4.805] for linear fitting
+## Mathematical Model
 
-• **Polynomial Fitting**: Uses numpy.polyfit(ln(x_fit), y_log, 1) implementing least squares method to determine optimal coefficients minimising sum of squared residuals
+### Core Formula
+```
+log₁₀(price) = a·ln(years - 2008) + b
+```
 
-• **Coefficient Interpretation**: Coefficient 'a' indicates how many orders of magnitude price increases per natural log unit of time; 'b' represents theoretical log10(price) at year 2009
+Where:
+- **a** = Exponential growth coefficient (orders of magnitude per unit time)
+- **b** = Y-intercept constant (theoretical log₁₀(price) at year 2009)
+- **years - 2008** = Time transformation to avoid ln(0) errors
 
-• **Future Price Calculation**: For projected years, computes future_x_fit = future_years - 2008, then future_y_log = a * ln(future_x_fit) + b, finally exponentiating: future_prices = 10^future_y_log
+### Methodology
 
-• **Smooth Curve Generation**: Creates 1000 interpolated points using linspace(4, 32) representing 2012-2040, ensuring smooth trendline visualization across extended timeframe
+1. **Time Transformation**: Converts halving years to x-values: [4, 8, 12, 16] (years since 2008)
+2. **Price Logarithmic Conversion**: Transforms halving prices into log₁₀ values for linear fitting
+3. **Polynomial Fitting**: Uses NumPy's least-squares method to determine optimal coefficients
+4. **Future Projections**: Calculates predictions for 2028, 2032, and 2036 halvings
+5. **Statistical Validation**: Computes R² and prediction accuracy metrics
 
-• **Offset Band Mathematics**: Prediction bands calculated as 10^(a * ln(x_plot + offset) + b) where offset represents temporal displacement (±0.5, ±1, ±2, ±3, ±4 years)
+## Historical Data
 
-• **Statistical Validation**: R-squared coefficient calculated as correlation between observed log10(prices) and predicted values squared, measuring model's explanatory power
+| Halving Year | Price (USD) | Log₁₀(Price) |
+|---|---|---|
+| 2012 | $12.33 | 1.091 |
+| 2016 | $651.94 | 2.814 |
+| 2020 | $8,591.65 | 3.934 |
+| 2024 | $63,807 | 4.805 |
 
-• **Error Analysis**: Percentage errors computed as |predicted - actual| / actual * 100, quantifying model accuracy for each historical halving event
+**Data Sources**:
+- [Investing.com - Bitcoin Historical Data](https://www.investing.com/crypto/bitcoin/historical-data)
+- [BitBo Rainbow Chart](https://charts.bitbo.io/rainbow/)
 
-• **Historical Data Integration**: Incorporates real Bitcoin weekly price movements from 2012-August 2025, including realistic monthly averages interpolated with market volatility
+## Visualization Features
 
-• **Visualisation Elements**: Red dots for halving prices (solid historical, hollow projected), blue HPR trendline extending to 2040, light coral weekly price line showing actual market fluctuations
+### V0.1
+![ExtendedBTCHalvingPriceRegression version 1](https://github.com/user-attachments/assets/2390e71b-4195-4cde-8503-b4424208af4b)
 
-• **Prediction Framework**: Coloured dashed bands showing timing uncertainty ranges (±1-4 years: green, yellow, orange, red; ±6 months: blue offset lines)
+### V0.2
+![ExtendedBTCHalvingPriceRegression version 2](https://github.com/user-attachments/assets/091f5d91-5681-4f77-814f-c34bbad32db8)
 
-• **Future Projections**: Calculates expected prices for upcoming halving cycles (2028, 2032, 2036) whilst acknowledging external factors like regulation and adoption could impact results
+### Chart Elements
+- **Red dots**: Historical halving prices (solid) and projected future prices (hollow)
+- **Blue trendline**: Logarithmic HPR model extending to 2040
+- **Light coral line**: Actual Bitcoin weekly price movements (2012-August 2025)
+- **Dashed prediction bands**: Timing uncertainty ranges
+  - ±1-4 years: Color-coded bands (green, yellow, orange, red)
+  - ±6 months: Blue offset lines
+- **Vertical markers**: Halving event years on logarithmic scale
 
-• **Statistical Validation**: Includes R-squared values and prediction accuracy metrics for historical data, showing model performance against actual halving prices
+## Key Insights
 
-• **Market Context**: Demonstrates correlation between Bitcoin's programmed scarcity events and major price movements, supporting supply reduction hypothesis
+- **Smooth Curve Generation**: 1,000 interpolated points (2012-2040) for smooth trendline visualization
+- **Offset Band Mathematics**: Confidence bands calculated using temporal displacement (±0.5, ±1, ±2, ±3, ±4 years)
+- **Prediction Framework**: Color-coded uncertainty ranges show timing confidence for future halvings
+- **Growth Analysis**: Calculates percentage growth between halving periods with error metrics
+- **Model Performance**: R² coefficient and percentage errors validate model accuracy against historical data
 
-• **Technical Features**: Logarithmic scale visualisation effectively displays exponential growth across multiple orders of magnitude with vertical markers for halving years
+## Installation & Usage
 
-• **Growth Analysis**: Provides percentage growth calculations between halving periods and compares actual versus predicted prices with error percentages for model validation
+```python
+# Requirements
+import numpy as np
+import matplotlib.pyplot as plt
 
-V0.1
-<img width="1440" height="816" alt="ExtendedBTCHalvingPriceRegression version 1" src="https://github.com/user-attachments/assets/2390e71b-4195-4cde-8503-b4424208af4b" />
+# Run analysis
+python BTC_Halving_Price_Regression.py
+```
 
-V0.2
-<img width="1440" height="816" alt="ExtendedBTCHalvingPriceRegression version 2" src="https://github.com/user-attachments/assets/091f5d91-5681-4f77-814f-c34bbad32db8" />
+## Limitations & Caveats
 
+- External factors (regulation, adoption, market sentiment) may significantly impact actual prices
+- Historical patterns do not guarantee future performance
+- Model assumptions may not hold during unprecedented market conditions
+- Predictions become less reliable with longer time horizons
 
-Inspired by: https://charts.bitbo.io/rainbow/
-Made by: me, ChatGPT, Claude
-Data: https://www.investing.com/crypto/bitcoin/historical-data | https://charts.bitbo.io/rainbow/
+## Future Projections
+
+Expected halving prices based on current model (subject to market volatility):
+- **2028 Halving**: [Model prediction]
+- **2032 Halving**: [Model prediction]
+- **2036 Halving**: [Model prediction]
+
+## Attribution
+
+- **Inspiration**: [BitBo Rainbow Chart](https://charts.bitbo.io/rainbow/)
+- **Development**: Created with assistance from ChatGPT and Claude
+
+## License
+
+[Add license information if applicable]
+
+---
+
+**Current Version**: V0.2  
+**Last Updated**: 2025
